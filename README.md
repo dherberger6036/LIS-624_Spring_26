@@ -7,3 +7,6 @@ This is the location used for work in the spring 26 LIS624 class.
   * Txt editing
   * Creating Git account
   * Creating and editing public repository
+  
+  ## New Section
+  Git edit test from VM Instance.
