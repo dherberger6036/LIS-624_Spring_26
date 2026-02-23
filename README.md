@@ -10,3 +10,10 @@ This is the location used for work in the spring 26 LIS624 class.
   
   ## New Section
   Git edit test from VM Instance.
+
+
+*Notes
+ *Learned and experimented with grep and searching with grep using an uploaded .bib file.
+ 
+ ## Update 2/23/26
+ 	Since the last updat we have covered the yaz client, searching with grep, and updating our instances with the apt command. I believe that I am becoming better with the command line with each lesson, which is heartening.
