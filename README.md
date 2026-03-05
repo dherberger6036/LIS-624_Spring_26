@@ -25,3 +25,11 @@ Steps: Download a .bib file containing various pieces from a larger collection a
 Results: A better understanding of how to search for articles within my VM instance.
 Verification: grep "^Year" scopus.bib is a command ran in the bibtex file to search for all lines that begin with "Year" which allows me to sort articles by year published.
 Notes: An interesting search tool but not my first choice.
+
+## 2026-02-18 - The yaz Client
+
+Goal: To install yaz, connect to a library OPAC, and search that OPAC for an article.
+Steps: use apt to install yaz. Connect to a library OPAC. Search the OPAC for an article(s).
+Results: Searched for history of hockey articles and found 9 usable articles.
+Verification: The command used to find the articles ' Z> find @and @attr 1=4 "history" @attr 1=21 "hockey" '
+
