@@ -33,3 +33,10 @@ Steps: use apt to install yaz. Connect to a library OPAC. Search the OPAC for an
 Results: Searched for history of hockey articles and found 9 usable articles.
 Verification: The command used to find the articles ' Z> find @and @attr 1=4 "history" @attr 1=21 "hockey" '
 
+#2026-3-4 PHP
+
+### Details
+This is an overview of the installation of php and its configuration on my VM instance hosted on Google cloud using my apache web server.
+
+VM host: Google Cloud
+OS: Ubuntu 
