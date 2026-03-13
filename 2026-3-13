@@ -1,0 +1,228 @@
+#2026-3-13 Installing and Configuring MySQL
+
+Ubuntu 24.04.4
+Google Cloud Console
+Windows 11
+Tilde Text Editor
+
+##Step 1 General Maintenance
+
+Running the following commands to ensure our VM instance is up to date.
+sudo apt update
+sudo apt upgrade
+sudo apt autoremove
+sudo apt clean
+
+All commands were executed without issue. Feed cleared for step 2.
+
+
+##Step 2
+
+Ran the following command:
+sudo apt install mysql-server
+
+Installed the MySQL community server without issue.
+
+Ran the command  'MySQL --version' to check installed MySQL version. Version Ver 8.0.45 confirmed.
+
+Ran the command 'systemctl status mysql' Confirmed everything was loaded and running.
+
+Ran a post installation command: 'sudo mysql_secure_installation'
+This allows us to set security parameters for our MySQL.
+
+
+##Step 3
+
+For this step we logged into our MySQL using the 'sudo mysql -u root' command.
+This brings us to our MySQL server.
+
+in our MySQL server I entered 'showdatabases;' and got the following:
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.17 sec)
+
+After confirming that everything was correct, I entered \q and returned to the BASH shell.
+
+
+##Step 4
+
+Logged back into the MySQL and entered the following promt 'create user 'opacuser'@'localhost' identified by 'XXXXXXXXX';
+This created a new user with a custom password that is censored for security reasons.
+
+
+##Step 5
+
+For this step we are creating a practice database. While still logged into the MySQL, the following commands are entered in sequence:
+mysql> create database opacdb default character set utf8mb4 collate utf8mb4_0900_ai_ci;
+mysql> show databases;
+mysql> grant all privileges on opacdb.* to 'opacuser'@'localhost';
+
+Confirmed that the commands worked and then exited the MySQL.
+
+
+##Step 6
+
+In order to make the MySQL more informative I ran the following: tilde ~/.bashrc
+This opened the client file and at the bottom of the file I added : export MYSQL_PS1="[\d]> "
+
+Next we logged into our MySQL using the credentials we created earlier.
+
+After logging in, we opened up the new database that we named opacdb we entered data into our table with the following:
+mysql> create table books (
+        id int unsigned not null auto_increment,
+        author varchar(150) not null,
+        title varchar(150) not null,
+        copyright year not null,
+        primary key (id)
+);
+
+We then added data to our table with the following commands. For the sake of the assignment , I reused the book examples already in place. No issues were encountered.
+
+mysql> insert into books (author, title, copyright) values
+('Jennifer Egan', 'The Candy House', '2022'),
+('Imbolo Mbue', 'How Beautiful We Were', '2021'),
+('Lydia Millet', 'A Children\'s Bible', '2020'),
+('Julia Phillips', 'Disappearing Earth', '2019');
+
+We then were able to view our data with the 'select * from books; command. The data looked as it should, according to the lecture.
+
+A series of tests were ran using the following commands entered in sequence:
+mysql> select author from books;
+mysql> select copyright from books;
+mysql> select author, title from books;
+mysql> select author from books where author like '%millet%';
+mysql> select title from books where author like '%mbue%';
+mysql> select author, title from books where title not like '%e';
+mysql> select * from books;
+mysql> alter table books add publisher varchar(75) after title;
+mysql> describe books;
+mysql> update books set publisher='Simon & Schuster' where id='1';
+mysql> update books set publisher='Penguin Random House' where id='2';
+mysql> update books set publisher='W. W. Norton & Company' where id='3';
+mysql> update books set publisher='Knopf' where id='4';
+mysql> select * from books;
+mysql> delete from books where author='Julia Phillips';
+mysql> insert into books
+       (author, title, publisher, copyright) values
+       ('Emma Donoghue', 'Room', 'Little, Brown & Company', '2010'),
+       ('Zadie Smith', 'White Teeth', 'Hamish Hamilton', '2000');
+mysql> select * from books;
+mysql> select author, publisher from books where copyright < '2011';
+mysql> select author from books order by copyright;
+mysql> \q
+
+These essentially tested our database as well as allow us to practice deleting lines, adding lines, and searching for specific data based on a key word or similar data.
+
+
+##Step 7
+
+###Install PHP and MySQL Support
+
+Installed php support in our MySQL using the 'sudo apt install php-mysql' command. Answered 'y' when prompted. No issues.
+
+Restarted apache2 and MySQL to ensure that the system recognizes the changes. Commands used:
+sudo systemctl restart apache2
+sudo systemctl restart mysql
+ No issues.
+
+Created the scripts for the php:
+cd /var/www
+sudo touch login.php
+sudo chmod 640 login.php
+sudo chown :www-data login.php
+ls -l login.php
+sudo nano login.php
+
+no issues when entering and executing commands.
+
+Created a file with the following credentials in tilde editor:
+<?php // login.php
+$db_hostname = "localhost";
+$db_database = "opacdb";
+$db_username = "opacuser";
+$db_password = "XXXXXXXXX";
+?>
+
+Created a new file in tilde titled "opac.php" and entered the following html:
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MySQL Server Example</title>
+</head>
+<body>
+
+    <h1>A Basic OPAC</h1>
+    <p>We can retrieve all the data from our database and book table using a couple of different queries.</p>
+
+    <?php
+    // Load MySQL credentials securely
+    require_once '/var/www/login.php';
+
+    // Enable detailed MySQL error reporting
+    mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+    // Establish database connection
+    $conn = new mysqli($db_hostname, $db_username, $db_password, $db_database);
+
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
+
+    echo "<h2>Query 1: Retrieving Publisher and Author Data</h2>";
+
+    // Query using prepared statement
+    $stmt = $conn->prepare("SELECT publisher, author FROM books");
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    while ($row = $result->fetch_assoc()) {
+        echo "<p>Publisher " . htmlspecialchars($row["publisher"]) .
+             " published a book by " . htmlspecialchars($row["author"]) . ".</p>";
+    }
+
+    $stmt->close();
+
+    echo "<h2>Query 2: Retrieving Author, Title, and Date Published Data</h2>";
+
+    $stmt2 = $conn->prepare("SELECT author, title, copyright FROM books");
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+
+    while ($row = $result2->fetch_assoc()) {
+        echo "<p>A book by " . htmlspecialchars($row["author"]) .
+             " titled <em>" . htmlspecialchars($row["title"]) .
+             "</em> was released in " . htmlspecialchars($row["copyright"]) . ".</p>";
+    }
+
+    $stmt2->close();
+    $conn->close();
+    ?>
+
+</body>
+</html>
+
+Everything looked normal so I saved and exited tilde.
+
+##Step 8
+###Test Syntax
+
+Entered the following commands to test how our file looked:
+sudo php -f /var/www/login.php
+sudo php -f /var/www/html/opac.php
+
+No issues observed.
+
+
+##Step 9
+
+Tested the functionality of my php file in a public ip: http://34.44.65.104/opac.php
+
+The file worked as intended.
