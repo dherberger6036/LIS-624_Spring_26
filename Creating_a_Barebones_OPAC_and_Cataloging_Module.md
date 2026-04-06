@@ -1,12 +1,12 @@
-##Create a Barebones OPAC and Cataloging system
+## Create a Barebones OPAC and Cataloging system
 
-##3-31-26
+## 3-31-26
 
-##Overview
+## Overview
 
 The goal of this assignment is to create a very basic OPAC and cataloging system. This will be done in a Google Cloud based VM running Ubuntu 24.04. Windows 11 OS. All systems and software are up to date.
 
-##Step 1 Create HTML and PHP Search Page
+## Step 1 Create HTML and PHP Search Page
 
 Before beginning, we must update the copyright column in our database so it uses the correct date data. The following commands were run in sequence with no issues:
 
@@ -19,7 +19,7 @@ mysql> alter table books drop column copyright;
 mysql> alter table books change publication_date copyright date not null;
 '''
 
-###A
+### A
 	*We create an html doc named 'mylibrary.html' and installed the following html text:
 
 '''
@@ -81,7 +81,7 @@ mysql> alter table books change publication_date copyright date not null;
 </html>
 '''
 
-###B
+### B
 	*Next we create our search script with PHP text document titled 'search.php' and added the following php:
 
 '''
@@ -167,15 +167,15 @@ mysql> alter table books change publication_date copyright date not null;
 </html>
 '''
 
-###All processes completed without issue.
+### All processes completed without issue.
 ---
-##Step 2 Create the HTML and PHP Cataloging Page
+## Step 2 Create the HTML and PHP Cataloging Page
 
 We want our data to match so we will crun the command 'sudo mkdir cataloging' in the /var/www/html directory.
 
 No issues.
 
-###A
+### A
 	*We will create an html file titled 'index' in the 'cataloging' directory and add the following html text:
 
 '''
@@ -209,7 +209,7 @@ No issues.
 </html>
 '''
 
-###>> The index.html gives us a user interface while the php will provide communication to move data.
+### >> The index.html gives us a user interface while the php will provide communication to move data.
 
 The following php script was inserted into our .php file:
 '''
@@ -274,7 +274,7 @@ $conn->close();
 </html>
 '''
 
-##Step 3 Security and Permissions
+## Step 3 Security and Permissions
 
 We are creating a low level security measure to practice real world scenarios where heightened security is needed. 
 
@@ -293,7 +293,7 @@ In order to communicate to apache that we have a new user that has control acces
 </Directory>
 '''
 
-####Next we will switch to our cataloging directory and create a .htaccess text document in tilde. The following was added:
+#### Next we will switch to our cataloging directory and create a .htaccess text document in tilde. The following was added:
 
 '''
 AuthType Basic
@@ -306,7 +306,7 @@ Last for this section we tested if the config file worked and then we restarted 
 
 >>> No issues up to this point.
 ---
-###Permissions and Ownership 
+### Permissions and Ownership 
 
 We wat to limit permissions and ownership to the user so we will use the chown and chmod commands.
 
@@ -321,4 +321,4 @@ The next command ensures that any new files created under the /var/www/html dire
  sudo find /var/www/html -type d -exec chmod g+s {} +
 '''
 
-####>>> The previous section took me several days to complete. I am not sure how or when, but at some point the apache software was removed and it essentially bricked my VM. A new VM was created and a revisit of the instructions found completion without issue.
+#### >>> The previous section took me several days to complete. I am not sure how or when, but at some point the apache software was removed and it essentially bricked my VM. A new VM was created and a revisit of the instructions found completion without issue.
